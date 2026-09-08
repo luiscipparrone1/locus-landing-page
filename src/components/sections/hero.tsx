@@ -49,6 +49,11 @@ export function Hero() {
                     gives two balanced lines instead of a ragged wrap. */}
                 {heroSubheadlineLines.map((line, i) => (
                   <Fragment key={line}>
+                    {/* The split ate the inter-sentence space; put it back so
+                        the sentences don't fuse ("day.Learn") below `sm`,
+                        where the <br> is hidden. From `sm` up the space
+                        collapses against the forced break. */}
+                    {i > 0 && " "}
                     {i > 0 && <br className="max-sm:hidden" />}
                     {line}
                   </Fragment>

@@ -151,9 +151,16 @@ export async function createCreditCheckoutSession({
       cancel_url: `${origin}/account`,
       expires_at:
         Math.floor((now ?? new Date()).getTime() / 1000) + CHECKOUT_EXPIRY_S,
-      // Deliberately no adaptive_pricing (unlike the subscription path): the
-      // grant trusts credit_amount_cents as USD, so a local-currency charge
-      // would credit the wrong amount.
+      // Credit packs are USD-only, deliberately, and unlike the subscription
+      // path (which is multi-currency as of 2026-09-04). No adaptive_pricing:
+      // its conversion rate is Stripe's, so the USD actually received for a
+      // fixed dollar amount of compute would float. No BRL `currency_options`
+      // either, for the same reason — credits buy real dollar-denominated
+      // compute, and a frozen BRL amount goes underwater as BRL weakens.
+      //
+      // Consequence: because the Stripe account is Brazilian, BR-issued cards
+      // cannot buy packs at all — they route on domestic rails, which settle
+      // only in BRL. Revisit via scripts/stripe/add-currency.mjs --only packs.
     },
     { idempotencyKey: purchaseIntentId }
   )
